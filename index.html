@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Hidz AI</title>
+    <meta name="theme-color" content="#f5f0e8" />
+    <meta name="description" content="Ngobrol sama HidzAI, asisten dari ekosistem HidzProject." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Hidz AI" />
+    <meta property="og:description" content="Ngobrol sama HidzAI, asisten dari ekosistem HidzProject." />
+    <meta property="og:image" content="https://www.gobox.my.id/file/vVUoB.png" />
+    <link rel="icon" type="image/jpeg" href="https://www.gobox.my.id/file/vVUoB.png" />
+    <link rel="apple-touch-icon" href="https://www.gobox.my.id/file/vVUoB.png" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap"
+    />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #6a3fc8;
+            --bg: #f5f0e8;
+            --surface: #fffef9;
+            --text: #0a0a0a;
+            --text-secondary: #333333;
+            --border: #0a0a0a;
+            --shadow-sm: 4px 4px 0px #0a0a0a;
+            --shadow-md: 5px 5px 0px #0a0a0a;
+            --y2k-lime: #b8ff00;
+            --y2k-cyan: #00e5ff;
+            --danger: #ef4444;
+            --online-dot: #22c55e;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+            background: var(--bg);
+        }
+
+        .app-shell {
+            height: 100vh;
+            height: 100dvh;
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            border-left: 3px solid var(--border);
+            border-right: 3px solid var(--border);
+        }
+
+        /* ---------- Header ---------- */
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border-bottom: 3px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .ai-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            cursor: pointer;
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--y2k-lime);
+            border: 2.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Orbitron", sans-serif;
+            font-weight: 900;
+            font-size: 12px;
+        }
+
+        .ai-title {
+            font-family: "Orbitron", sans-serif;
+            font-weight: 900;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            color: var(--text);
+        }
+
+        .ai-title i {
+            font-size: 9px;
+            color: var(--text-secondary);
+            margin-left: 2px;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .ai-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--online-dot);
+            flex-shrink: 0;
+        }
+
+        .ai-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border: 2.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .icon-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px var(--border);
+        }
+
+        .icon-btn.is-active {
+            background: var(--y2k-lime);
+        }
+
+        /* ---------- Chat body ---------- */
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            display: flex;
+        }
+
+        .msg-user {
+            justify-content: flex-end;
+        }
+
+        .msg-ai {
+            justify-content: flex-start;
+        }
+
+        .msg-col {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-width: 78%;
+        }
+
+        .msg-user .msg-col {
+            align-items: flex-end;
+        }
+
+        .msg-ai .msg-col {
+            align-items: flex-start;
+        }
+
+        .msg-image {
+            max-width: 200px;
+            border: 2.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: block;
+        }
+
+        .bubble {
+            padding: 11px 14px;
+            border: 2.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .msg-ai .bubble {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .msg-user .bubble {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .bubble-replay {
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .typing-dots {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 13px 14px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text);
+            animation: hidzai-bounce 1s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes hidzai-bounce {
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* ---------- Attach preview ---------- */
+
+        .attach-row {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px 0;
+            background: var(--surface);
+        }
+
+        .attach-thumb {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border: 2.5px solid var(--border);
+        }
+
+        .attach-remove {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .attach-name {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* ---------- Input bar ---------- */
+
+        .chat-input-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 12px 14px;
+            background: var(--surface);
+            border-top: 3px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        #chatInput {
+            flex: 1;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            padding: 11px 12px;
+            border: 2.5px solid var(--border);
+            background: var(--bg);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        #chatInput:focus {
+            outline: none;
+        }
+
+        .bar-icon-btn,
+        .btn-send {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border: 2.5px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .btn-send {
+            background: var(--y2k-cyan);
+        }
+
+        .bar-icon-btn:active,
+        .btn-send:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px var(--border);
+        }
+
+        .bar-icon-btn:disabled,
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .bar-icon-btn.is-listening {
+            background: var(--danger);
+            color: #fff;
+            animation: hidzai-pulse 1s infinite;
+        }
+
+        @keyframes hidzai-pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        /* ---------- Setup modal ---------- */
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 10, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 50;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 320px;
+            background: var(--surface);
+            border: 3px solid var(--border);
+            box-shadow: var(--shadow-md);
+            padding: 22px 20px;
+        }
+
+        .modal-title {
+            font-family: "Orbitron", sans-serif;
+            font-weight: 900;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .modal-sub {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 2.5px solid var(--border);
+            background: var(--bg);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-primary,
+        .btn-ghost {
+            padding: 10px 16px;
+            border: 2.5px solid var(--border);
+            font-weight: 700;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            font-family: "Space Grotesk", sans-serif;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--y2k-cyan);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-ghost {
+            background: var(--surface);
+        }
+
+        .btn-primary:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px var(--border);
+        }
+
+        .btn-ghost:active {
+            transform: translate(2px, 2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="ai-header">
+            <div class="ai-header-left" id="headerLeft" title="Ganti username">
+                <div class="ai-avatar">AI</div>
+                <div>
+                    <div class="ai-title">HIDZ AI <i class="fas fa-chevron-down" aria-hidden="true"></i></div>
+                    <div class="ai-status">
+                        <span class="dot"></span>
+                        <span id="aiStatus">Online</span>
+                        <span id="aiUserTag"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-actions">
+                <button type="button" id="btnVoiceToggle" class="icon-btn" title="Baca balasan otomatis" aria-label="Baca balasan otomatis">
+                    <i class="fas fa-volume-high" aria-hidden="true"></i>
+                </button>
+                <button type="button" id="btnClear" class="icon-btn" title="Mulai obrolan baru" aria-label="Mulai obrolan baru">
+                    <i class="fas fa-eraser" aria-hidden="true"></i>
+                </button>
+            </div>
+        </header>
+
+        <main id="chatBody" class="chat-body"></main>
+
+        <div class="attach-row" id="attachRow"></div>
+
+        <form id="chatForm" class="chat-input-bar">
+            <button type="button" id="btnAttach" class="bar-icon-btn" aria-label="Lampirkan gambar">
+                <i class="fas fa-paperclip" aria-hidden="true"></i>
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none" />
+            <textarea id="chatInput" rows="1" placeholder="Tulis pesan..." maxlength="4000"></textarea>
+            <button type="button" id="btnMic" class="bar-icon-btn" aria-label="Rekam suara">
+                <i class="fas fa-microphone" aria-hidden="true"></i>
+            </button>
+            <button type="submit" id="btnSend" class="btn-send" aria-label="Kirim pesan">
+                <i class="fas fa-paper-plane" aria-hidden="true"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="overlay" id="setupOverlay">
+        <div class="modal-card">
+            <div class="modal-title">Siapa kamu?</div>
+            <p class="modal-sub">
+                Kasih nama/kode singkat biar riwayat chat bisa disambungin ke device lain. Ini
+                bukan password — cukup diinget & diketik sama persis di device lain.
+            </p>
+            <form id="setupForm">
+                <input type="text" id="setupInput" class="modal-input" placeholder="mis. hidz" maxlength="30" autocomplete="off" />
+                <div class="modal-actions">
+                    <button type="button" id="btnSkipSetup" class="btn-ghost">Nanti aja</button>
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var LOCAL_HISTORY_KEY = "hidzai_chat_history";
+            var USERNAME_KEY = "hidzai_username";
+            var SETUP_SEEN_KEY = "hidzai_setup_seen";
+            var MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+
+            var chatBody = document.getElementById("chatBody");
+            var form = document.getElementById("chatForm");
+            var input = document.getElementById("chatInput");
+            var btnSend = document.getElementById("btnSend");
+            var btnClear = document.getElementById("btnClear");
+            var btnAttach = document.getElementById("btnAttach");
+            var fileInput = document.getElementById("fileInput");
+            var attachRow = document.getElementById("attachRow");
+            var btnMic = document.getElementById("btnMic");
+            var btnVoiceToggle = document.getElementById("btnVoiceToggle");
+            var statusEl = document.getElementById("aiStatus");
+            var userTagEl = document.getElementById("aiUserTag");
+            var headerLeft = document.getElementById("headerLeft");
+            var overlay = document.getElementById("setupOverlay");
+            var setupForm = document.getElementById("setupForm");
+            var setupInput = document.getElementById("setupInput");
+            var btnSkipSetup = document.getElementById("btnSkipSetup");
+
+            var username = loadUsername();
+            var history = loadLocalHistory();
+            var pendingImage = null;
+            var autoSpeak = false;
+
+            var SpeechRecognitionImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
+            var micSupported = !!SpeechRecognitionImpl;
+            var ttsSupported = "speechSynthesis" in window;
+            var recognition = null;
+            var isListening = false;
+
+            renderAll();
+            updateUserTag();
+
+            if (username) {
+                syncFromFirebase(username);
+            } else if (!hasSeenSetup()) {
+                openSetupModal();
+            }
+
+            // ---------- Storage helpers ----------
+
+            function loadUsername() {
+                try {
+                    return localStorage.getItem(USERNAME_KEY) || null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function saveUsername(u) {
+                try {
+                    localStorage.setItem(USERNAME_KEY, u);
+                } catch (e) {}
+            }
+
+            function hasSeenSetup() {
+                try {
+                    return localStorage.getItem(SETUP_SEEN_KEY) === "1";
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function markSetupSeen() {
+                try {
+                    localStorage.setItem(SETUP_SEEN_KEY, "1");
+                } catch (e) {}
+            }
+
+            function loadLocalHistory() {
+                try {
+                    var raw = localStorage.getItem(LOCAL_HISTORY_KEY);
+                    var parsed = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function saveLocalHistory() {
+                try {
+                    var trimmed = history.slice(-40).map(function (m) {
+                        return { role: m.role, content: m.content || (m.image ? "[gambar]" : "") };
+                    });
+                    localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(trimmed));
+                } catch (e) {}
+            }
+
+            // ---------- Rendering ----------
+
+            function renderAll() {
+                chatBody.innerHTML = "";
+                if (history.length === 0) {
+                    appendBubble("ai", "Halo! Aku HidzAI \u2014 bisa diajak ngobrol, kirim gambar, atau ngomong langsung pake mic.");
+                    return;
+                }
+                for (var i = 0; i < history.length; i++) {
+                    appendBubble(history[i].role === "user" ? "user" : "ai", history[i].content);
+                }
+            }
+
+            function appendBubble(role, text, opts) {
+                opts = opts || {};
+                var wrap = document.createElement("div");
+                wrap.className = "msg " + (role === "user" ? "msg-user" : "msg-ai");
+
+                var col = document.createElement("div");
+                col.className = "msg-col";
+
+                if (opts.imagePreview) {
+                    var img = document.createElement("img");
+                    img.src = opts.imagePreview;
+                    img.className = "msg-image";
+                    img.alt = "Gambar terkirim";
+                    col.appendChild(img);
+                }
+
+                if (text) {
+                    var bubble = document.createElement("div");
+                    bubble.className = "bubble";
+                    bubble.textContent = text;
+                    col.appendChild(bubble);
+                }
+
+                if (role === "ai" && ttsSupported && text) {
+                    var replay = document.createElement("button");
+                    replay.type = "button";
+                    replay.className = "bubble-replay";
+                    replay.setAttribute("aria-label", "Dengarkan balasan ini");
+                    replay.innerHTML = '<i class="fas fa-volume-high" aria-hidden="true"></i>';
+                    replay.addEventListener("click", function () {
+                        speak(text);
+                    });
+                    col.appendChild(replay);
+                }
+
+                wrap.appendChild(col);
+                chatBody.appendChild(wrap);
+                scrollToBottom();
+                return wrap;
+            }
+
+            function appendTyping() {
+                var wrap = document.createElement("div");
+                wrap.className = "msg msg-ai";
+                wrap.innerHTML = '<div class="bubble typing-dots"><span></span><span></span><span></span></div>';
+                chatBody.appendChild(wrap);
+                scrollToBottom();
+                return wrap;
+            }
+
+            function scrollToBottom() {
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+
+            function autoResize() {
+                input.style.height = "auto";
+                input.style.height = Math.min(input.scrollHeight, 120) + "px";
+            }
+
+            function setLoading(state) {
+                btnSend.disabled = state;
+                btnAttach.disabled = state;
+                input.disabled = state;
+                statusEl.textContent = state ? "Mengetik..." : "Online";
+            }
+
+            function updateUserTag() {
+                userTagEl.textContent = username ? "\u00b7 @" + username : "";
+            }
+
+            // ---------- Firebase sync ----------
+
+            function syncFromFirebase(user) {
+                statusEl.textContent = "Sinkronisasi...";
+                fetch("/api/hidzai-history?user=" + encodeURIComponent(user))
+                    .then(function (res) {
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, data: data };
+                        });
+                    })
+                    .then(function (result) {
+                        statusEl.textContent = "Online";
+                        if (result.ok && Array.isArray(result.data.messages)) {
+                            history = result.data.messages;
+                            saveLocalHistory();
+                            renderAll();
+                        }
+                    })
+                    .catch(function () {
+                        statusEl.textContent = "Online";
+                    });
+            }
+
+            // ---------- Setup modal (username) ----------
+
+            function openSetupModal() {
+                setupInput.value = username || "";
+                overlay.style.display = "flex";
+                setupInput.focus();
+            }
+
+            function closeSetupModal() {
+                overlay.style.display = "none";
+            }
+
+            headerLeft.addEventListener("click", openSetupModal);
+
+            btnSkipSetup.addEventListener("click", function () {
+                markSetupSeen();
+                closeSetupModal();
+            });
+
+            setupForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                var cleaned = setupInput.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+                if (cleaned.length < 3) {
+                    alert("Nama minimal 3 karakter, huruf/angka aja ya.");
+                    return;
+                }
+                username = cleaned;
+                saveUsername(username);
+                markSetupSeen();
+                updateUserTag();
+                closeSetupModal();
+                syncFromFirebase(username);
+            });
+
+            // ---------- Image attach ----------
+
+            btnAttach.addEventListener("click", function () {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener("change", function () {
+                var file = fileInput.files[0];
+                fileInput.value = "";
+                if (!file) return;
+                if (file.type.indexOf("image/") !== 0) {
+                    alert("Cuma bisa upload gambar dulu ya.");
+                    return;
+                }
+                if (file.size > MAX_IMAGE_BYTES) {
+                    alert("Ukuran gambar maksimal 4MB.");
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var result = reader.result;
+                    var commaIdx = result.indexOf(",");
+                    pendingImage = {
+                        media_type: file.type,
+                        data: result.slice(commaIdx + 1),
+                        previewUrl: result,
+                        name: file.name,
+                    };
+                    renderAttachPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            function renderAttachPreview() {
+                attachRow.innerHTML = "";
+                if (!pendingImage) {
+                    attachRow.style.display = "none";
+                    return;
+                }
+                attachRow.style.display = "flex";
+
+                var thumb = document.createElement("img");
+                thumb.src = pendingImage.previewUrl;
+                thumb.className = "attach-thumb";
+                thumb.alt = "Pratinjau gambar";
+
+                var name = document.createElement("span");
+                name.className = "attach-name";
+                name.textContent = pendingImage.name;
+
+                var remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "attach-remove";
+                remove.setAttribute("aria-label", "Batalkan lampiran");
+                remove.innerHTML = '<i class="fas fa-xmark" aria-hidden="true"></i>';
+                remove.addEventListener("click", function () {
+                    pendingImage = null;
+                    renderAttachPreview();
+                });
+
+                attachRow.appendChild(thumb);
+                attachRow.appendChild(name);
+                attachRow.appendChild(remove);
+            }
+
+            // ---------- Voice input (mic) ----------
+
+            if (micSupported) {
+                recognition = new SpeechRecognitionImpl();
+                recognition.lang = "id-ID";
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.addEventListener("result", function (e) {
+                    var transcript = e.results[0][0].transcript;
+                    input.value = (input.value ? input.value + " " : "") + transcript;
+                    autoResize();
+                });
+                recognition.addEventListener("end", function () {
+                    isListening = false;
+                    btnMic.classList.remove("is-listening");
+                });
+                recognition.addEventListener("error", function () {
+                    isListening = false;
+                    btnMic.classList.remove("is-listening");
+                });
+
+                btnMic.addEventListener("click", function () {
+                    if (isListening) {
+                        recognition.stop();
+                        return;
+                    }
+                    isListening = true;
+                    btnMic.classList.add("is-listening");
+                    recognition.start();
+                });
+            } else {
+                btnMic.style.display = "none";
+            }
+
+            // ---------- Voice output (TTS) ----------
+
+            function speak(text) {
+                if (!ttsSupported || !text) return;
+                window.speechSynthesis.cancel();
+                var utter = new SpeechSynthesisUtterance(text);
+                utter.lang = "id-ID";
+                window.speechSynthesis.speak(utter);
+            }
+
+            if (ttsSupported) {
+                btnVoiceToggle.addEventListener("click", function () {
+                    autoSpeak = !autoSpeak;
+                    btnVoiceToggle.classList.toggle("is-active", autoSpeak);
+                });
+            } else {
+                btnVoiceToggle.style.display = "none";
+            }
+
+            // ---------- Send message ----------
+
+            input.addEventListener("input", autoResize);
+            input.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    form.requestSubmit();
+                }
+            });
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                var text = input.value.trim();
+                if (!text && !pendingImage) return;
+
+                var userMsg = { role: "user", content: text };
+                var imagePreviewForDisplay = null;
+                if (pendingImage) {
+                    userMsg.image = { media_type: pendingImage.media_type, data: pendingImage.data };
+                    imagePreviewForDisplay = pendingImage.previewUrl;
+                }
+
+                history.push(userMsg);
+                appendBubble("user", text, { imagePreview: imagePreviewForDisplay });
+                saveLocalHistory();
+
+                input.value = "";
+                pendingImage = null;
+                renderAttachPreview();
+                autoResize();
+                setLoading(true);
+
+                var typingEl = appendTyping();
+                var payload = { messages: history };
+                if (username) payload.user = username;
+
+                fetch("/api/hidzai-chat", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(payload),
+                })
+                    .then(function (res) {
+                        return res.json().then(function (data) {
+                            return { ok: res.ok, data: data };
+                        });
+                    })
+                    .then(function (result) {
+                        typingEl.remove();
+
+                        // hapus gambar dari history di memori setelah dikirim,
+                        // biar payload request berikutnya gak makin gede
+                        if (userMsg.image) {
+                            delete userMsg.image;
+                            if (!userMsg.content) userMsg.content = "[gambar]";
+                        }
+
+                        if (!result.ok) {
+                            appendBubble("ai", result.data.error || "Ada gangguan, coba lagi ya.");
+                            return;
+                        }
+                        history.push({ role: "assistant", content: result.data.reply });
+                        appendBubble("ai", result.data.reply);
+                        saveLocalHistory();
+                        if (autoSpeak) speak(result.data.reply);
+                    })
+                    .catch(function () {
+                        typingEl.remove();
+                        appendBubble("ai", "Koneksi lagi bermasalah, coba lagi sebentar.");
+                    })
+                    .finally(function () {
+                        setLoading(false);
+                    });
+            });
+
+            // ---------- Clear conversation ----------
+
+            btnClear.addEventListener("click", function () {
+                if (!confirm("Mulai obrolan baru? Riwayat sebelumnya bakal dihapus.")) return;
+                history = [];
+                saveLocalHistory();
+                renderAll();
+                if (username) {
+                    fetch("/api/hidzai-history?user=" + encodeURIComponent(username), { method: "DELETE" }).catch(
+                        function () {}
+                    );
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
